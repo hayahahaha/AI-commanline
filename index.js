@@ -1,27 +1,23 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import EventEmitter from 'node:events'
+import handleQuestion from './genai.mjs'
+import rl from './rl.mjs'
 import 'dotenv/config'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINIAI_API_KEY)
+class MainEvent extends EventEmitter {
+	constructor() {
+		super()
+		this.rl = rl
+		this.on('question', question => handleQuestion(question))
+	}
 
-async function run() {
-  try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
-    const prompt = process.argv[2]
-
-    if (!prompt) {
-      console.log('Don\'t have promt')
-      return
-    }
-    const result = await model.generateContent([prompt])
-
-    const response = result.response
-    const text = await response.text()
-    console.log(text)
-  } catch (error) {
-    console.log("Some thing wrong");
-    console.log(JSON.stringify(error))
-  }
+	start() {
+		this.rl.question(`How can I help you today?\n`, question => {
+			this.emit('question', question)
+			this.rl.close()
+		})
+	}
 }
 
-run()
+const mainEvent = new MainEvent(rl)
 
+mainEvent.start()
