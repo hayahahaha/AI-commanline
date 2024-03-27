@@ -4,9 +4,11 @@
 - Run command line echo -n 'export GEMINIAI_API_KEY = "API KEY" >> ~/.zshrc
 
 ```bash
-node . "Question Here"
+node .
+input question for ai
 ```
 
+## Coming soon feature
 
-## Coming soon feature 
-### Chat history in command line
+- [x] Readquestion from keyboard input
+- [ ] Chat history
